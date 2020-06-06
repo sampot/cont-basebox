@@ -1,4 +1,11 @@
-version: 2
+version: 2.1
+
+workflows:
+   build:
+     jobs:
+       - build:
+           context: DOCKER_HUB_LOGIN
+
 jobs:
   build:
     docker:
@@ -6,7 +13,6 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: sudo apt-get install -y make
       - run:
           name: Build Docker image
           command: make build
