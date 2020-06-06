@@ -9,5 +9,5 @@ build: Dockerfile
 	docker build  -t $(GROUP)/$(NAME):$(VERSION) .
 
 publish:
-	docker login ${DOCKER_USER} ${DOCKER_USER}
+	echo ${DOCKER_PASS} | docker login --username ${DOCKER_USER} --password-stdin
 	docker push $(GROUP)/$(NAME):$(VERSION)
