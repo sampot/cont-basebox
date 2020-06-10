@@ -1,6 +1,6 @@
 FROM ubuntu:18.04 as builder
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update -q && apt-get install -qy busybox-static pwgen
+# RUN DEBIAN_FRONTEND=noninteractive apt-get update -q && apt-get install -qy pwgen
 
 RUN mkdir -p /dist
 WORKDIR /dist
@@ -13,30 +13,28 @@ RUN chmod a+w tmp &&\
   cp /etc/nsswitch.conf etc/nsswitch.conf &&\
   echo root:x:0:0:root:/root:/bin/sh > etc/passwd &&\
   echo root:x:0: > etc/group &&\
-  echo spk:x:1000:1000::/home/spk:/bin/bash >> etc/passwd &&\
-  echo spk:x:1000: >> etc/group &&\
-  echo spk:x:1000:1000::/home/spk:/bin/bash >> /etc/passwd &&\
+  echo spk:x:1000:1000::/home/spk:/bin/nologin >> /etc/passwd &&\
   echo spk:x:1000: >> /etc/group
 
 RUN ln -s lib lib64 &&\
   ln -s bin sbin &&\
-  cp /bin/busybox bin &&\
-  /bin/busybox --install -s /dist/bin &&\
-  bash -c "cp /lib/x86_64-linux-gnu/lib{c,m,dl,rt,nsl,nss_*,pthread,resolv}.so.* lib" &&\
+  bash -c "cp /lib/x86_64-linux-gnu/lib{c,m,dl,rt,nsl,nss_*,pthread,resolv,gcc*}.so.* lib" &&\
   cp -a /root /dist/ &&\
   mkdir -p /dist/home/spk &&\
   chown -R spk:spk home/spk
 
-RUN cp /usr/bin/pwgen usr/bin/ &&\
+RUN cp /usr/sbin/nologin usr/bin/ &&\
   cp /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 lib/ &&\
   cp /lib/x86_64-linux-gnu/libtinfo.so.5 lib/ &&\
   cp /lib/x86_64-linux-gnu/libutil.so.1 lib/ &&\
   cp /lib/x86_64-linux-gnu/libz.so.1 lib/
 
+RUN echo "/lib/x86_64-linux-gnu" && ls -al /lib/x86_64-linux-gnu
+
 FROM scratch
 
 COPY --from=builder /dist /
 
-WORKDIR /
+WORKDIR /home/spk
 
-CMD ["/bin/sh"]
+CMD ["/usr/bin/nologin"]
