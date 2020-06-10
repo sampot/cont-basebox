@@ -1,6 +1,6 @@
 GROUP=sampot
 NAME=basebox
-VERSION=18.04-spk1
+VERSION=18.04-spk2
 
 
 all: build
