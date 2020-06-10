@@ -3,7 +3,7 @@ NAME=basebox
 VERSION=18.04-spk1
 
 
-all: build publish
+all: build
 
 build: Dockerfile
 	docker build  -t $(GROUP)/$(NAME):$(VERSION) .
